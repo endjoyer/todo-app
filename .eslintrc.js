@@ -7,5 +7,12 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
   settings: { react: { version: 'detect' } },
-  rules: {},
+  rules: {
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
+      },
+    ],
+  },
 };

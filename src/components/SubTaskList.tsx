@@ -1,33 +1,22 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  addSubTask,
-  TaskActionTypes,
-  toggleSubTask,
-  updateTask,
-} from '../redux/actions/taskActions.ts';
+import { addSubTask, TaskActionTypes } from '../redux/actions/taskActions.ts';
 import { SubTask } from '../redux/reducers/taskReducer.ts';
 import { Dispatch } from 'redux';
-import { RootState } from '../redux/reducers/index.ts';
-import { Task } from 'redux-saga';
 
 interface SubTaskListProps {
-  task: Task;
   taskId: number;
   subTasks: SubTask[];
+  setSubTasks: React.Dispatch<React.SetStateAction<SubTask[]>>;
 }
 
 const SubTaskList: React.FC<SubTaskListProps> = ({
-  task,
   taskId,
   subTasks,
+  setSubTasks,
 }) => {
   const [subTaskTitle, setSubTaskTitle] = useState('');
   const dispatch = useDispatch<Dispatch<TaskActionTypes>>();
-  // const subTasks = useSelector(
-  //   (state: RootState) =>
-  //     state.tasks.tasks.find((task) => task.id === taskId)?.subTasks || [],
-  // );
 
   const handleAddSubTask = () => {
     if (subTaskTitle.trim()) {
@@ -37,15 +26,18 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
         completed: false,
       };
       dispatch(addSubTask(taskId, newSubTask));
+      setSubTasks([...subTasks, newSubTask]);
       setSubTaskTitle('');
-      task.subTasks.push(newSubTask);
-
-      dispatch(updateTask(task));
     }
   };
 
   const handleToggleSubTask = (subTaskId: number) => {
-    dispatch(toggleSubTask(taskId, subTaskId));
+    const updatedSubTasks = subTasks.map((subTask) =>
+      subTask.id === subTaskId
+        ? { ...subTask, completed: !subTask.completed }
+        : subTask,
+    );
+    setSubTasks(updatedSubTasks);
   };
 
   return (

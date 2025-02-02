@@ -1,15 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { Dispatch } from 'redux';
 import { useDispatch } from 'react-redux';
-import {
-  TaskActionTypes,
-  updateTask,
-  updateTaskStatus,
-} from '../redux/actions/taskActions.ts';
+import { TaskActionTypes, updateTask } from '../redux/actions/taskActions.ts';
 import SubTaskList from './SubTaskList.tsx';
 import CommentSection from './CommentSection.tsx';
-import { Task } from '../redux/reducers/taskReducer.ts';
+import { Task, SubTask, Comment } from '../redux/reducers/taskReducer.ts';
 
 interface EditTaskModalProps {
   isOpen: boolean;
@@ -25,12 +21,25 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [priority, setPriority] = useState(task.priority);
+  const [subTasks, setSubTasks] = useState<SubTask[]>(task.subTasks);
+  const [comments, setComments] = useState<Comment[]>(task.comments);
   const dispatch = useDispatch<Dispatch<TaskActionTypes>>();
 
+  useEffect(() => {
+    setSubTasks(task.subTasks);
+    setComments(task.comments);
+  }, [task]);
+
   const handleSave = () => {
-    // Обнови задачу в состоянии
-    dispatch(updateTaskStatus(task.id, task.status)); // Здесь можно добавить больше логики для обновления задачи
-    const updatedTask = { ...task, title, description };
+    const updatedTask = {
+      ...task,
+      title,
+      description,
+      priority,
+      subTasks,
+      comments,
+    };
+
     dispatch(updateTask(updatedTask));
     onRequestClose();
   };
@@ -63,8 +72,16 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
         <option value="medium">Medium</option>
         <option value="high">High</option>
       </select>
-      <SubTaskList task={task} taskId={task.id} subTasks={task.subTasks} />
-      <CommentSection task={task} taskId={task.id} comments={task.comments} />
+      <SubTaskList
+        taskId={task.id}
+        subTasks={subTasks}
+        setSubTasks={setSubTasks}
+      />
+      <CommentSection
+        taskId={task.id}
+        comments={comments}
+        setComments={setComments}
+      />
       <button onClick={handleSave}>Save</button>
       <button onClick={onRequestClose}>Cancel</button>
     </Modal>

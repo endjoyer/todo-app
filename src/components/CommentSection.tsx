@@ -11,11 +11,13 @@ import { Dispatch } from 'redux';
 interface CommentSectionProps {
   taskId: number;
   comments: Comment[];
+  setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
 }
 
 const CommentSection: React.FC<CommentSectionProps> = ({
   taskId,
   comments,
+  setComments,
 }) => {
   const [commentText, setCommentText] = useState('');
   const dispatch = useDispatch<Dispatch<TaskActionTypes>>();
@@ -27,7 +29,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         text: commentText,
         replies: [],
       };
+
       dispatch(addComment(taskId, newComment));
+      setComments([...comments, newComment]);
       setCommentText('');
     }
   };
@@ -40,6 +44,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         replies: [],
       };
       dispatch(addReply(taskId, commentId, newReply));
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment.id === commentId
+            ? { ...comment, replies: [...comment.replies, newReply] }
+            : comment,
+        ),
+      );
     }
   };
 
@@ -77,8 +88,13 @@ interface ReplySectionProps {
   onAddReply: (commentId: number, replyText: string) => void;
 }
 
+interface ReplySectionProps {
+  commentId: number;
+  replies: Comment[];
+  onAddReply: (commentId: number, replyText: string) => void;
+}
+
 const ReplySection: React.FC<ReplySectionProps> = ({
-  taskId,
   commentId,
   replies,
   onAddReply,

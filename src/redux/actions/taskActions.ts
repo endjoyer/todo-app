@@ -38,6 +38,7 @@ interface AddReplyAction {
   type: typeof ADD_REPLY;
   payload: { taskId: number; commentId: number; reply: Comment };
 }
+
 interface UpdateTaskAction {
   type: typeof UPDATE_TASK;
   payload: Task;

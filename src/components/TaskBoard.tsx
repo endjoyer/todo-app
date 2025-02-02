@@ -5,10 +5,12 @@ import {
   TaskActionTypes,
   updateTaskStatus,
 } from '../redux/actions/taskActions.ts';
-import EditTaskModal from './EditTaskModal.tsx';
+import TaskItem from './TaskItem.tsx';
 import styles from '../styles/TaskBoard.module.scss';
 import { Dispatch } from 'redux';
 import { Task } from '../redux/reducers/taskReducer.ts';
+import EditTaskModal from './EditTaskModal.tsx';
+import SearchBar from './SearchBar.tsx';
 
 interface TaskBoardProps {
   tasks: Task[];
@@ -17,6 +19,7 @@ interface TaskBoardProps {
 const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
   const dispatch = useDispatch<Dispatch<TaskActionTypes>>();
   const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const onDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -29,20 +32,17 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
     }
   };
 
-  const getTasksByStatus = (status: string) => {
-    return tasks.filter((task) => task.status === status);
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
   };
 
-  const openEditModal = (task: any) => {
-    setSelectedTask(task);
-  };
-
-  const closeEditModal = () => {
-    setSelectedTask(null);
-  };
+  const filteredTasks = tasks.filter((task) =>
+    task.title.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   return (
     <div>
+      <SearchBar onSearch={handleSearch} />
       <DragDropContext onDragEnd={onDragEnd}>
         <div className={styles['task-board']}>
           {['Queue', 'Development', 'Done'].map((status) => (
@@ -54,27 +54,27 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
                   {...provided.droppableProps}
                 >
                   <h2>{status}</h2>
-                  {getTasksByStatus(status).map((task, index) => (
-                    <Draggable
-                      key={task.id}
-                      draggableId={task.id.toString()}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <div
-                          className={styles['task-item']}
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          onClick={() => openEditModal(task)}
-                        >
-                          <h3>{task.title}</h3>
-                          <p>{task.description}</p>
-                          {/* Добавь другие поля задачи */}
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
+                  {filteredTasks
+                    .filter((task) => task.status === status)
+                    .map((task, index) => (
+                      <Draggable
+                        key={task.id}
+                        draggableId={task.id.toString()}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <div
+                            className={styles['task-item']}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            onClick={() => setSelectedTask(task)}
+                          >
+                            <TaskItem task={task} />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
                   {provided.placeholder}
                 </div>
               )}
@@ -85,7 +85,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
       {selectedTask && (
         <EditTaskModal
           isOpen={!!selectedTask}
-          onRequestClose={closeEditModal}
+          onRequestClose={() => setSelectedTask(null)}
           task={selectedTask}
         />
       )}

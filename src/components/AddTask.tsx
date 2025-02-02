@@ -7,6 +7,7 @@ const AddTask: React.FC = () => {
   const [taskTitle, setTaskTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('low');
+  const [files, setFiles] = useState<File[]>([]);
   const dispatch = useDispatch<Dispatch<TaskActionTypes>>();
 
   const handleAddTask = () => {
@@ -21,15 +22,22 @@ const AddTask: React.FC = () => {
         workingTime: 0,
         endDate: null,
         priority,
-        files: [],
+        files,
         subTasks: [],
         comments: [],
-        projected: selectedProject, // Добавлено
+        projected: selectedProject,
       };
       dispatch(addTask(newTask));
       setTaskTitle('');
       setDescription('');
       setPriority('low');
+      setFiles([]);
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setFiles(Array.from(event.target.files));
     }
   };
 
@@ -56,6 +64,7 @@ const AddTask: React.FC = () => {
         <option value="medium">Medium</option>
         <option value="high">High</option>
       </select>
+      <input type="file" multiple onChange={handleFileChange} />
       <button onClick={handleAddTask}>Add Task</button>
     </div>
   );

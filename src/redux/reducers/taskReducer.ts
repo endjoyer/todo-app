@@ -28,6 +28,7 @@ export interface Task {
   status: string;
   createdAt: Date;
   workingTime: number; // in minutes
+  developmentStartTime: Date | null;
   endDate: Date | null;
   priority: 'low' | 'medium' | 'high';
   files: File[];
@@ -57,11 +58,38 @@ const taskReducer = (
     case UPDATE_TASK_STATUS:
       return {
         ...state,
-        tasks: state.tasks.map((task) =>
-          task.id === action.payload.taskId
-            ? { ...task, status: action.payload.status }
-            : task,
-        ),
+        tasks: state.tasks.map((task) => {
+          if (task.id === action.payload.taskId) {
+            const isEnteringDevelopment =
+              action.payload.status === 'Development' &&
+              task.status !== 'Development';
+            const isExitingDevelopment =
+              action.payload.status !== 'Development' &&
+              task.status === 'Development';
+
+            let newWorkingTime = task.workingTime;
+            let newDevelopmentStartTime = task.developmentStartTime;
+
+            if (isEnteringDevelopment) {
+              newDevelopmentStartTime = new Date();
+            } else if (isExitingDevelopment && task.developmentStartTime) {
+              const timeSpent =
+                (new Date().getTime() -
+                  new Date(task.developmentStartTime).getTime()) /
+                60000; // Convert ms to minutes
+              newWorkingTime += timeSpent;
+              newDevelopmentStartTime = null;
+            }
+
+            return {
+              ...task,
+              status: action.payload.status,
+              workingTime: newWorkingTime,
+              developmentStartTime: newDevelopmentStartTime,
+            };
+          }
+          return task;
+        }),
       };
     case ADD_SUBTASK:
       return {

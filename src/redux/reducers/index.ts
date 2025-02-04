@@ -1,13 +1,14 @@
 import { combineReducers } from 'redux';
 import projectReducer from './projectReducer.ts';
 import taskReducer from './taskReducer.ts';
+import { TaskActionTypes } from '../actions/taskActions.ts';
 
 const appReducer = combineReducers({
   projects: projectReducer,
   tasks: taskReducer,
 });
 
-const rootReducer = (state: any, action: any) => {
+const rootReducer = (state: RootState | undefined, action: TaskActionTypes) => {
   const newState = appReducer(state, action);
   localStorage.setItem('appState', JSON.stringify(newState));
   return newState;

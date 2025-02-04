@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { addTask, TaskActionTypes } from '../redux/actions/taskActions.ts';
 import { Dispatch } from 'redux';
+import { Task } from '../redux/reducers/taskReducer.ts';
 
 const AddTask: React.FC = () => {
   const [taskTitle, setTaskTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('low');
   const [files, setFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch<Dispatch<TaskActionTypes>>();
 
   const handleAddTask = () => {
     const selectedProject = localStorage.getItem('selectedProject');
     if (taskTitle.trim() && selectedProject) {
-      const newTask = {
+      const newTask: Task = {
         id: Date.now(),
         title: taskTitle,
         description,
@@ -23,16 +25,20 @@ const AddTask: React.FC = () => {
         developmentStartTime: null,
         endDate: null,
         priority,
-        files,
+        files: files,
         subTasks: [],
         comments: [],
         projected: selectedProject,
       };
+
       dispatch(addTask(newTask));
       setTaskTitle('');
       setDescription('');
       setPriority('low');
       setFiles([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -65,7 +71,12 @@ const AddTask: React.FC = () => {
         <option value="medium">Medium</option>
         <option value="high">High</option>
       </select>
-      <input type="file" multiple onChange={handleFileChange} />
+      <input
+        type="file"
+        multiple
+        onChange={handleFileChange}
+        ref={fileInputRef}
+      />
       <button onClick={handleAddTask}>Add Task</button>
     </div>
   );

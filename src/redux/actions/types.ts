@@ -7,3 +7,5 @@ export const ADD_COMMENT = 'ADD_COMMENT';
 export const ADD_REPLY = 'ADD_REPLY';
 export const UPDATE_TASK = 'UPDATE_TASK';
 export const UPDATE_TASK_ORDER = 'UPDATE_TASK_ORDER';
+export const DELETE_PROJECT = 'DELETE_PROJECT';
+export const DELETE_TASK = 'DELETE_TASK';

@@ -7,6 +7,7 @@ import {
   ADD_REPLY,
   UPDATE_TASK,
   UPDATE_TASK_ORDER,
+  DELETE_TASK,
 } from '../actions/types.ts';
 import { TaskActionTypes } from '../actions/taskActions.ts';
 
@@ -162,6 +163,11 @@ const taskReducer = (
         tasks: state.tasks
           .filter((task) => task.status !== action.payload.status)
           .concat(action.payload.tasks),
+      };
+    case DELETE_TASK:
+      return {
+        ...state,
+        tasks: state.tasks.filter((task) => task.id !== action.payload),
       };
     default:
       return state;

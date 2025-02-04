@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { Dispatch } from 'redux';
 import { useDispatch } from 'react-redux';
-import { TaskActionTypes, updateTask } from '../redux/actions/taskActions.ts';
+import {
+  TaskActionTypes,
+  updateTask,
+  deleteTask,
+} from '../redux/actions/taskActions.ts';
 import SubTaskList from './SubTaskList.tsx';
 import CommentSection from './CommentSection.tsx';
 import { Task, SubTask, Comment } from '../redux/reducers/taskReducer.ts';
@@ -45,8 +49,18 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
   };
 
   const handleFileRemove = (index: number) => {
-    setFiles(files.filter((_, i) => i !== index));
+    const updatedFiles = files.filter((_, i) => i !== index);
+    setFiles(updatedFiles);
+
+    localStorage.setItem('taskFiles', JSON.stringify(updatedFiles));
   };
+
+  useEffect(() => {
+    const storedFiles = localStorage.getItem('taskFiles');
+    if (storedFiles) {
+      setFiles(JSON.parse(storedFiles));
+    }
+  }, []);
 
   const handleSave = () => {
     const updatedTask = {
@@ -60,6 +74,11 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
     };
 
     dispatch(updateTask(updatedTask));
+    onRequestClose();
+  };
+
+  const handleDelete = () => {
+    dispatch(deleteTask(task.id));
     onRequestClose();
   };
 
@@ -96,7 +115,9 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
       <ul>
         {files.map((file, index) => (
           <li key={index}>
-            {file.name}
+            <a href={URL.createObjectURL(file)} download={file.name}>
+              {file.name}
+            </a>
             <button onClick={() => handleFileRemove(index)}>Remove</button>
           </li>
         ))}
@@ -113,6 +134,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
       />
       <button onClick={handleSave}>Save</button>
       <button onClick={onRequestClose}>Cancel</button>
+      <button onClick={handleDelete}>Delete Task</button>
     </Modal>
   );
 };

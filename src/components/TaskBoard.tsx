@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from 'react-beautiful-dnd';
 import {
   TaskActionTypes,
   updateTaskOrder,
@@ -25,7 +30,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
   } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const onDragEnd = (result: any) => {
+  const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
     const { source, destination } = result;

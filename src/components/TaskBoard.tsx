@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
   TaskActionTypes,
+  updateTaskOrder,
   updateTaskStatus,
 } from '../redux/actions/taskActions.ts';
 import TaskItem from './TaskItem.tsx';
@@ -18,17 +19,42 @@ interface TaskBoardProps {
 
 const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
   const dispatch = useDispatch<Dispatch<TaskActionTypes>>();
-  const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [selectedTask, setSelectedTask] = useState<{
+    task: Task;
+    index: number;
+  } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const onDragEnd = (result: any) => {
     if (!result.destination) return;
 
     const { source, destination } = result;
-    if (source.droppableId !== destination.droppableId) {
-      const taskId = parseInt(result.draggableId);
-      const newStatus = destination.droppableId;
-      dispatch(updateTaskStatus(taskId, newStatus));
+    const taskId = parseInt(result.draggableId);
+
+    if (source.droppableId === destination.droppableId) {
+      const columnTasks = tasks.filter(
+        (task) => task.status === source.droppableId,
+      );
+      const [movedTask] = columnTasks.splice(source.index, 1);
+      columnTasks.splice(destination.index, 0, movedTask);
+
+      dispatch(updateTaskOrder(source.droppableId, columnTasks));
+    } else {
+      const sourceTasks = tasks.filter(
+        (task) => task.status === source.droppableId,
+      );
+      const destinationTasks = tasks.filter(
+        (task) => task.status === destination.droppableId,
+      );
+
+      const [movedTask] = sourceTasks.splice(source.index, 1);
+      movedTask.status = destination.droppableId;
+      destinationTasks.splice(destination.index, 0, movedTask);
+
+      dispatch(updateTaskOrder(source.droppableId, sourceTasks));
+      dispatch(updateTaskOrder(destination.droppableId, destinationTasks));
+
+      dispatch(updateTaskStatus(taskId, destination.droppableId));
     }
   };
 
@@ -68,9 +94,9 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            onClick={() => setSelectedTask(task)}
+                            onClick={() => setSelectedTask({ task, index })}
                           >
-                            <TaskItem task={task} />
+                            <TaskItem task={task} index={index + 1} />
                           </div>
                         )}
                       </Draggable>
@@ -86,7 +112,8 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks }) => {
         <EditTaskModal
           isOpen={!!selectedTask}
           onRequestClose={() => setSelectedTask(null)}
-          task={selectedTask}
+          task={selectedTask.task}
+          index={selectedTask.index + 1}
         />
       )}
     </div>

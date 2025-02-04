@@ -6,29 +6,47 @@ import { TaskActionTypes, updateTask } from '../redux/actions/taskActions.ts';
 import SubTaskList from './SubTaskList.tsx';
 import CommentSection from './CommentSection.tsx';
 import { Task, SubTask, Comment } from '../redux/reducers/taskReducer.ts';
+import TaskItem from './TaskItem.tsx';
 
 interface EditTaskModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
   task: Task;
+  index: number;
 }
 
 const EditTaskModal: React.FC<EditTaskModalProps> = ({
   isOpen,
   onRequestClose,
   task,
+  index,
 }) => {
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [priority, setPriority] = useState(task.priority);
   const [subTasks, setSubTasks] = useState<SubTask[]>(task.subTasks);
   const [comments, setComments] = useState<Comment[]>(task.comments);
+  const [files, setFiles] = useState<File[]>(task.files);
   const dispatch = useDispatch<Dispatch<TaskActionTypes>>();
 
   useEffect(() => {
+    setTitle(task.title);
+    setDescription(task.description);
+    setPriority(task.priority);
     setSubTasks(task.subTasks);
     setComments(task.comments);
+    setFiles(task.files);
   }, [task]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setFiles([...files, ...Array.from(event.target.files)]);
+    }
+  };
+
+  const handleFileRemove = (index: number) => {
+    setFiles(files.filter((_, i) => i !== index));
+  };
 
   const handleSave = () => {
     const updatedTask = {
@@ -38,6 +56,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
       priority,
       subTasks,
       comments,
+      files,
     };
 
     dispatch(updateTask(updatedTask));
@@ -51,6 +70,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
       contentLabel="Edit Task"
     >
       <h2>Edit Task</h2>
+      <TaskItem task={task} index={index} />
       <input
         type="text"
         value={title}
@@ -72,6 +92,15 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
         <option value="medium">Medium</option>
         <option value="high">High</option>
       </select>
+      <input type="file" multiple onChange={handleFileChange} />
+      <ul>
+        {files.map((file, index) => (
+          <li key={index}>
+            {file.name}
+            <button onClick={() => handleFileRemove(index)}>Remove</button>
+          </li>
+        ))}
+      </ul>
       <SubTaskList
         taskId={task.id}
         subTasks={subTasks}

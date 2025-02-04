@@ -20,6 +20,7 @@ const AddTask: React.FC = () => {
         status: 'Queue',
         createdAt: new Date(),
         workingTime: 0,
+        developmentStartTime: null,
         endDate: null,
         priority,
         files,

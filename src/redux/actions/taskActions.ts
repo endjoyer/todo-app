@@ -6,6 +6,7 @@ import {
   ADD_COMMENT,
   ADD_REPLY,
   UPDATE_TASK,
+  UPDATE_TASK_ORDER,
 } from './types.ts';
 import { Task, SubTask, Comment } from '../reducers/taskReducer.ts';
 
@@ -44,6 +45,11 @@ interface UpdateTaskAction {
   payload: Task;
 }
 
+interface UpdateTaskOrderAction {
+  type: typeof UPDATE_TASK_ORDER;
+  payload: { status: string; tasks: Task[] };
+}
+
 export type TaskActionTypes =
   | AddTaskAction
   | UpdateTaskStatusAction
@@ -51,7 +57,8 @@ export type TaskActionTypes =
   | ToggleSubTaskAction
   | AddCommentAction
   | AddReplyAction
-  | UpdateTaskAction;
+  | UpdateTaskAction
+  | UpdateTaskOrderAction;
 
 export const addTask = (task: Task): AddTaskAction => ({
   type: ADD_TASK,
@@ -102,4 +109,12 @@ export const addReply = (
 export const updateTask = (task: Task): UpdateTaskAction => ({
   type: UPDATE_TASK,
   payload: task,
+});
+
+export const updateTaskOrder = (
+  status: string,
+  tasks: Task[],
+): UpdateTaskOrderAction => ({
+  type: UPDATE_TASK_ORDER,
+  payload: { status, tasks },
 });

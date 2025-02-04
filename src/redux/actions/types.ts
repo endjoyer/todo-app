@@ -6,3 +6,4 @@ export const TOGGLE_SUBTASK = 'TOGGLE_SUBTASK';
 export const ADD_COMMENT = 'ADD_COMMENT';
 export const ADD_REPLY = 'ADD_REPLY';
 export const UPDATE_TASK = 'UPDATE_TASK';
+export const UPDATE_TASK_ORDER = 'UPDATE_TASK_ORDER';

@@ -6,6 +6,7 @@ import {
   ADD_COMMENT,
   ADD_REPLY,
   UPDATE_TASK,
+  UPDATE_TASK_ORDER,
 } from '../actions/types.ts';
 import { TaskActionTypes } from '../actions/taskActions.ts';
 
@@ -61,14 +62,13 @@ const taskReducer = (
         tasks: state.tasks.map((task) => {
           if (task.id === action.payload.taskId) {
             const isEnteringDevelopment =
-              action.payload.status === 'Development' &&
-              task.status !== 'Development';
+              action.payload.status === 'Development';
             const isExitingDevelopment =
-              action.payload.status !== 'Development' &&
-              task.status === 'Development';
+              action.payload.status !== 'Development';
 
             let newWorkingTime = task.workingTime;
             let newDevelopmentStartTime = task.developmentStartTime;
+            let newEndDate = task.endDate;
 
             if (isEnteringDevelopment) {
               newDevelopmentStartTime = new Date();
@@ -81,11 +81,16 @@ const taskReducer = (
               newDevelopmentStartTime = null;
             }
 
+            if (action.payload.status === 'Done') {
+              newEndDate = new Date();
+            }
+
             return {
               ...task,
               status: action.payload.status,
               workingTime: newWorkingTime,
               developmentStartTime: newDevelopmentStartTime,
+              endDate: newEndDate,
             };
           }
           return task;
@@ -150,6 +155,13 @@ const taskReducer = (
         tasks: state.tasks.map((task) =>
           task.id === action.payload.id ? action.payload : task,
         ),
+      };
+    case UPDATE_TASK_ORDER:
+      return {
+        ...state,
+        tasks: state.tasks
+          .filter((task) => task.status !== action.payload.status)
+          .concat(action.payload.tasks),
       };
     default:
       return state;

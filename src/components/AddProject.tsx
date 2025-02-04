@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addProject } from '../redux/actions/projectActions.ts';
+import styles from '../styles/AddProject.module.scss';
 
 const AddProject: React.FC = () => {
   const [projectName, setProjectName] = useState('');
@@ -14,14 +15,14 @@ const AddProject: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className={styles['add-project-container']}>
       <input
         type="text"
         value={projectName}
         onChange={(e) => setProjectName(e.target.value)}
         placeholder="Enter project name"
       />
-      <button onClick={handleAddProject}>Add Project</button>
+      <button onClick={handleAddProject}>Add</button>
     </div>
   );
 };

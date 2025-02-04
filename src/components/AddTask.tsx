@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { addTask, TaskActionTypes } from '../redux/actions/taskActions.ts';
 import { Dispatch } from 'redux';
 import { Task } from '../redux/reducers/taskReducer.ts';
+import styles from '../styles/AddTask.module.scss';
 
 const AddTask: React.FC = () => {
   const [taskTitle, setTaskTitle] = useState('');
@@ -49,7 +50,7 @@ const AddTask: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className={styles['add-task']}>
       <input
         type="text"
         value={taskTitle}
@@ -77,7 +78,7 @@ const AddTask: React.FC = () => {
         onChange={handleFileChange}
         ref={fileInputRef}
       />
-      <button onClick={handleAddTask}>Add Task</button>
+      <button onClick={handleAddTask}>Add</button>
     </div>
   );
 };

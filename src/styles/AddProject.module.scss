@@ -1,0 +1,29 @@
+.add-project-container {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.add-project-container input[type='text'] {
+  width: 100%;
+  max-width: 400px;
+  min-width: 200px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.add-project-container button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #28a745;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-project-container button:hover {
+  background-color: #218838;
+}

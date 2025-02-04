@@ -1,5 +1,6 @@
 import React from 'react';
 import { Task } from '../redux/reducers/taskReducer.ts';
+import styles from '../styles/TaskItem.module.scss';
 
 interface TaskItemProps {
   task: Task;
@@ -27,18 +28,24 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, index }) => {
   const workingTime = calculateWorkingTime();
 
   return (
-    <div>
+    <div className={styles['task-item']}>
       <h3>
         {index}. {task.title}
       </h3>
       <p>{task.description}</p>
-      <p>Priority: {task.priority}</p>
-      <p>Status: {task.status}</p>
-      <p>Created At: {new Date(task.createdAt).toLocaleString()}</p>
+      <p className={styles['priority']}>Priority: {task.priority}</p>
+      <p className={styles['status']}>Status: {task.status}</p>
+      <p className={styles['created-at']}>
+        Created At: {new Date(task.createdAt).toLocaleString()}
+      </p>
       {task.status !== 'Development' && task.endDate && (
-        <p>Date of completion: {new Date(task.endDate).toLocaleString()}</p>
+        <p className={styles['end-date']}>
+          Date of completion: {new Date(task.endDate).toLocaleString()}
+        </p>
       )}
-      <p>Working Time: {formatTime(workingTime)}</p>
+      <p className={styles['working-time']}>
+        Working Time: {formatTime(workingTime)}
+      </p>
     </div>
   );
 };

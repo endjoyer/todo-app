@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Modal from 'react-modal';
-import './styles/index.css';
+import './styles/globalStyles.scss';
 import AppRoutes from './routes.tsx';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';

@@ -11,6 +11,7 @@ import SubTaskList from './SubTaskList.tsx';
 import CommentSection from './CommentSection.tsx';
 import { Task, SubTask, Comment } from '../redux/reducers/taskReducer.ts';
 import TaskItem from './TaskItem.tsx';
+import styles from '../styles/EditTaskModal.module.scss';
 
 interface EditTaskModalProps {
   isOpen: boolean;
@@ -51,16 +52,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
   const handleFileRemove = (index: number) => {
     const updatedFiles = files.filter((_, i) => i !== index);
     setFiles(updatedFiles);
-
-    localStorage.setItem('taskFiles', JSON.stringify(updatedFiles));
   };
-
-  useEffect(() => {
-    const storedFiles = localStorage.getItem('taskFiles');
-    if (storedFiles) {
-      setFiles(JSON.parse(storedFiles));
-    }
-  }, []);
 
   const handleSave = () => {
     const updatedTask = {
@@ -87,54 +79,74 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Edit Task"
+      className={styles['edit-task-modal']}
     >
-      <h2>Edit Task</h2>
-      <TaskItem task={task} index={index} />
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Task Title"
-      />
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Task Description"
-      />
-      <select
-        value={priority}
-        onChange={(e) =>
-          setPriority(e.target.value as 'low' | 'medium' | 'high')
-        }
-      >
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-      </select>
-      <input type="file" multiple onChange={handleFileChange} />
-      <ul>
-        {files.map((file, index) => (
-          <li key={index}>
-            <a href={URL.createObjectURL(file)} download={file.name}>
-              {file.name}
-            </a>
-            <button onClick={() => handleFileRemove(index)}>Remove</button>
-          </li>
-        ))}
-      </ul>
-      <SubTaskList
-        taskId={task.id}
-        subTasks={subTasks}
-        setSubTasks={setSubTasks}
-      />
-      <CommentSection
-        taskId={task.id}
-        comments={comments}
-        setComments={setComments}
-      />
-      <button onClick={handleSave}>Save</button>
-      <button onClick={onRequestClose}>Cancel</button>
-      <button onClick={handleDelete}>Delete Task</button>
+      <div className={styles['edit-task-modal-container']}>
+        <h2>Edit Task</h2>
+        <TaskItem task={task} index={index} />
+        <input
+          type="text"
+          value={title}
+          className={styles['edit-task-modal-title-input']}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Task Title"
+        />
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Task Description"
+        />
+        <select
+          value={priority}
+          onChange={(e) =>
+            setPriority(e.target.value as 'low' | 'medium' | 'high')
+          }
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+        <input type="file" multiple onChange={handleFileChange} />
+        <ul>
+          {files.map(
+            (file, index) =>
+              file.name && (
+                <li key={index}>
+                  <a href={URL.createObjectURL(file)} download={file.name}>
+                    {file.name}
+                  </a>
+                  <button
+                    className={styles['edit-task-modal-remove-file']}
+                    onClick={() => handleFileRemove(index)}
+                  />
+                </li>
+              ),
+          )}
+        </ul>
+        <SubTaskList
+          taskId={task.id}
+          subTasks={subTasks}
+          setSubTasks={setSubTasks}
+        />
+        <CommentSection
+          taskId={task.id}
+          comments={comments}
+          setComments={setComments}
+        />
+        <button className={styles['edit-task-modal-save']} onClick={handleSave}>
+          Save
+        </button>
+        <button
+          className={styles['edit-task-modal-delete']}
+          onClick={handleDelete}
+        >
+          Delete Task
+        </button>
+        <button
+          className={styles['edit-task-modal-close']}
+          onClick={onRequestClose}
+        />
+      </div>
     </Modal>
   );
 };

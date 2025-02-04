@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addSubTask, TaskActionTypes } from '../redux/actions/taskActions.ts';
+import {
+  addSubTask,
+  toggleSubTask,
+  TaskActionTypes,
+} from '../redux/actions/taskActions.ts';
 import { SubTask } from '../redux/reducers/taskReducer.ts';
 import { Dispatch } from 'redux';
+import styles from '../styles/SubTaskList.module.scss';
 
 interface SubTaskListProps {
   taskId: number;
@@ -15,50 +20,55 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
   subTasks,
   setSubTasks,
 }) => {
-  const [subTaskTitle, setSubTaskTitle] = useState('');
+  const [subTaskText, setSubTaskText] = useState('');
   const dispatch = useDispatch<Dispatch<TaskActionTypes>>();
 
   const handleAddSubTask = () => {
-    if (subTaskTitle.trim()) {
+    if (subTaskText.trim()) {
       const newSubTask: SubTask = {
         id: Date.now(),
-        title: subTaskTitle,
+        title: subTaskText,
         completed: false,
       };
+
       dispatch(addSubTask(taskId, newSubTask));
       setSubTasks([...subTasks, newSubTask]);
-      setSubTaskTitle('');
+      setSubTaskText('');
     }
   };
 
   const handleToggleSubTask = (subTaskId: number) => {
-    const updatedSubTasks = subTasks.map((subTask) =>
-      subTask.id === subTaskId
-        ? { ...subTask, completed: !subTask.completed }
-        : subTask,
+    dispatch(toggleSubTask(taskId, subTaskId));
+    setSubTasks((prevSubTasks) =>
+      prevSubTasks.map((subTask) =>
+        subTask.id === subTaskId
+          ? { ...subTask, completed: !subTask.completed }
+          : subTask,
+      ),
     );
-    setSubTasks(updatedSubTasks);
   };
 
   return (
-    <div>
-      <h4>Subtasks</h4>
-      <input
-        type="text"
-        value={subTaskTitle}
-        onChange={(e) => setSubTaskTitle(e.target.value)}
-        placeholder="Enter subtask title"
-      />
-      <button onClick={handleAddSubTask}>Add Subtask</button>
+    <div className={styles['subtask-list']}>
+      <h4>SubTasks</h4>
+      <div className={styles['subtask-input']}>
+        <input
+          type="text"
+          value={subTaskText}
+          onChange={(e) => setSubTaskText(e.target.value)}
+          placeholder="Enter subtask"
+        />
+        <button onClick={handleAddSubTask}>Add</button>
+      </div>
       <ul>
         {subTasks.map((subTask) => (
           <li key={subTask.id}>
-            <input
-              type="checkbox"
-              checked={subTask.completed}
-              onChange={() => handleToggleSubTask(subTask.id)}
-            />
-            {subTask.title}
+            <p className={subTask.completed ? styles['completed'] : ''}>
+              {subTask.title}
+            </p>
+            <button onClick={() => handleToggleSubTask(subTask.id)}>
+              {subTask.completed ? 'Undo' : 'Complete'}
+            </button>
           </li>
         ))}
       </ul>

@@ -7,6 +7,7 @@ import {
 } from '../redux/actions/taskActions.ts';
 import { Comment } from '../redux/reducers/taskReducer.ts';
 import { Dispatch } from 'redux';
+import styles from '../styles/CommentSection.module.scss';
 
 interface CommentSectionProps {
   taskId: number;
@@ -55,21 +56,22 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   };
 
   return (
-    <div>
+    <div className={styles['comment-section']}>
       <h4>Comments</h4>
-      <input
-        type="text"
-        value={commentText}
-        onChange={(e) => setCommentText(e.target.value)}
-        placeholder="Enter comment"
-      />
-      <button onClick={handleAddComment}>Add Comment</button>
+      <div className={styles['comment-input']}>
+        <input
+          type="text"
+          value={commentText}
+          onChange={(e) => setCommentText(e.target.value)}
+          placeholder="Enter comment"
+        />
+        <button onClick={handleAddComment}>Add</button>
+      </div>
       <ul>
         {comments.map((comment) => (
           <li key={comment.id}>
             <p>{comment.text}</p>
             <ReplySection
-              taskId={taskId}
               commentId={comment.id}
               replies={comment.replies}
               onAddReply={handleAddReply}
@@ -80,13 +82,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     </div>
   );
 };
-
-interface ReplySectionProps {
-  taskId: number;
-  commentId: number;
-  replies: Comment[];
-  onAddReply: (commentId: number, replyText: string) => void;
-}
 
 interface ReplySectionProps {
   commentId: number;
@@ -107,17 +102,19 @@ const ReplySection: React.FC<ReplySectionProps> = ({
   };
 
   return (
-    <div>
-      <input
-        type="text"
-        value={replyText}
-        onChange={(e) => setReplyText(e.target.value)}
-        placeholder="Enter reply"
-      />
-      <button onClick={handleAddReply}>Reply</button>
+    <div className={styles['comment-reply']}>
+      <div className={styles['comment-input']}>
+        <input
+          type="text"
+          value={replyText}
+          onChange={(e) => setReplyText(e.target.value)}
+          placeholder="Enter reply"
+        />
+        <button onClick={handleAddReply}>Reply</button>
+      </div>
       <ul>
         {replies.map((reply) => (
-          <li key={reply.id}>
+          <li className={styles['comment-input']} key={reply.id}>
             <p>{reply.text}</p>
           </li>
         ))}

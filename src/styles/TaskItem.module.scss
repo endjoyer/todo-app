@@ -1,0 +1,40 @@
+.task-item {
+  background-color: #e0e7ff;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.task-item:hover {
+  background-color: #c7d2fe;
+}
+
+.task-item h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.task-item p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.task-item .priority {
+  font-weight: bold;
+  color: #1d4ed8;
+}
+
+.task-item .status {
+  font-weight: bold;
+  color: #059669;
+}
+
+.task-item .created-at,
+.task-item .end-date,
+.task-item .working-time {
+  font-size: 14px;
+  color: #6b7280;
+}
